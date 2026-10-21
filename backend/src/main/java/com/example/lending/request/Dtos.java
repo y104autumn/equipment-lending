@@ -47,6 +47,15 @@ record RequestView(
 record EquipmentView(Long equipmentId, String name) {
 }
 
+/** Dify の確認結果。available=false の時 checkPoints は null で、message を画面に出す（Dify連携.md §3）。 */
+record AiCheckView(Long requestId, boolean available, String checkPoints, String message) {
+}
+
+/** Dify へ渡す申請の内容。WHY: Dify を待つ間（最大 100 秒）DB のトランザクションを開けたままにしないため、先に値だけ取り出す。 */
+record AiCheckInput(Long requestId, String equipmentName, java.time.LocalDate startDate,
+        java.time.LocalDate dueDate, String reason) {
+}
+
 /** エラーの応答。details は項目ごとの検査結果（400 の時だけ入る）。 */
 record ApiError(int status, String message, List<String> details) {
 }

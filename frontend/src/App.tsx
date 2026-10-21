@@ -21,6 +21,7 @@ type LendingRequest = {
   actions: ActionPath[]
 }
 type ApiError = { status: number; message: string; details: string[] }
+type AiCheck = { requestId: number; available: boolean; checkPoints: string | null; message: string | null }
 
 const STATUS_LABEL: Record<Status, string> = {
   REQUESTED: '申請中',
@@ -63,6 +64,8 @@ function App() {
   const [filter, setFilter] = useState<Status | null>(null)
   const [listError, setListError] = useState<string | null>(null)
   const [busyId, setBusyId] = useState<number | null>(null)
+  // WHY: Dify の結果は保存しない（承認の補助・D-14）。押した行の分だけ画面に持つ。
+  const [aiChecks, setAiChecks] = useState<Record<number, AiCheck | 'loading'>>({})
 
   const [applicantName, setApplicantName] = useState('')
   const [equipmentId, setEquipmentId] = useState('')
@@ -135,6 +138,18 @@ function App() {
       await loadRequests().catch(() => {})
     } finally {
       setBusyId(null)
+    }
+  }
+
+  async function aiCheck(id: number) {
+    setAiChecks((m) => ({ ...m, [id]: 'loading' }))
+    try {
+      const res = await call<AiCheck>(`/api/requests/${id}/ai-check`, { method: 'POST' })
+      setAiChecks((m) => ({ ...m, [id]: res }))
+    } catch (err) {
+      // WHY: Dify の失敗はサーバーが 200 で返す。ここに来るのは 404 や通信断。どちらも承認の操作は止めない。
+      const message = (err as ApiError).message ?? 'AI の確認を取得できませんでした'
+      setAiChecks((m) => ({ ...m, [id]: { requestId: id, available: false, checkPoints: null, message } }))
     }
   }
 
@@ -234,8 +249,11 @@ function App() {
               <div className="col col-actions">操作</div>
             </div>
             {requests.length === 0 && <div className="row row-empty">申請はありません</div>}
-            {requests.map((r) => (
-              <div className="row" role="row" key={r.requestId}>
+            {requests.map((r) => {
+              const check = aiChecks[r.requestId]
+              return (
+              <div className="row-group" key={r.requestId}>
+              <div className="row" role="row">
                 <div className="col col-id">#{r.requestId}</div>
                 <div className="col col-name" title={r.applicantName}>
                   {r.applicantName}
@@ -263,9 +281,30 @@ function App() {
                       {ACTION_LABEL[a]}
                     </button>
                   ))}
+                  {/* WHY: 承認の判断補助なので、承認できる状態（申請中）の行にだけ出す（D-14）。 */}
+                  {r.actions.includes('approve') && (
+                    <button
+                      type="button"
+                      className="btn btn-ai"
+                      disabled={check === 'loading'}
+                      onClick={() => aiCheck(r.requestId)}
+                    >
+                      AI 確認
+                    </button>
+                  )}
                 </div>
               </div>
-            ))}
+              {check && (
+                <div className="ai-check" role="status">
+                  <span className="ai-check-label">AI の確認ポイント（承認するかは総務が決める）</span>
+                  {check === 'loading' && <p>確認中…</p>}
+                  {check !== 'loading' && check.available && <p className="ai-check-text">{check.checkPoints}</p>}
+                  {check !== 'loading' && !check.available && <p className="ai-check-error">{check.message}</p>}
+                </div>
+              )}
+              </div>
+              )
+            })}
           </div>
 
           {listError && (

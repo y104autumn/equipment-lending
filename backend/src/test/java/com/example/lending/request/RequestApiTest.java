@@ -192,6 +192,26 @@ class RequestApiTest {
                 .andExpect(status().isBadRequest());
     }
 
+    // ---- Dify の確認（D-14）。テストでは キー未設定＝取得できない側を通す ----
+
+    @Test
+    void Difyが使えなくても200で取得できないと返し_申請の状態は変わらない() throws Exception {
+        long id = create(VALID);
+        mvc.perform(post("/api/requests/" + id + "/ai-check"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.requestId", is((int) id)))
+                .andExpect(jsonPath("$.available", is(false)))
+                .andExpect(jsonPath("$.checkPoints").doesNotExist())
+                .andExpect(jsonPath("$.message", is("AI の確認を取得できませんでした")));
+        act(id, "approve", 200);
+        assertThat(historyRepository.findByRequestIdOrderByIdAsc(id)).hasSize(2);
+    }
+
+    @Test
+    void 存在しない申請番号のDify確認は404() throws Exception {
+        act(999999, "ai-check", 404);
+    }
+
     // ---- 異常系 404 / 409 ----
 
     @Test

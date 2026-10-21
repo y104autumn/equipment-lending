@@ -23,6 +23,25 @@
 | 入力 | `equipment_name`・`start_date`・`due_date`・`reason` | 申請の内容（`テーブル定義書.md` の申請の列。`reason` は任意で空のことがある） |
 | 出力 | `check_points` | 総務が承認前に確かめる点（文章）。承認するかは総務が決める（D-14） |
 
+### 2.1 Dify 側のアプリ
+
+| 項目 | 内容 |
+|---|---|
+| アプリ名 | 備品貸出 申請理由の確認（Workflow・公開済み） |
+| 構成 | 開始（入力 4 つ）→ LLM（gpt-4.1-mini）→ 出力（`check_points`） |
+
+### 2.2 このアプリ側の呼び方（実装 `DifyClient.java`）
+
+| 項目 | 内容 |
+|---|---|
+| 画面から呼ぶ API | `POST /api/requests/{id}/ai-check`。申請番号が無ければ 404。それ以外は Dify の成否にかかわらず 200 |
+| 応答 | `{requestId, available, checkPoints, message}`。取れた時は `available=true` と `checkPoints`、取れなかった時は `available=false` と `message`＝「AI の確認を取得できませんでした」 |
+| `user` | `request-{申請番号}`。申請者名は送らない（個人名を外部へ出さない） |
+| `reason` が空 | 空文字で送る |
+| タイムアウト | `dify.timeout-seconds`（既定 100 秒＝Dify の上限に合わせる） |
+| キーが未設定 | Dify を呼ばずに「取得できない」を返す（テストはこの状態で回す） |
+| 結果の保存 | しない（承認の補助・D-14） |
+
 ## 3. エラーの扱い
 
 本文は `{"code": "...", "message": "...", "status": 400}` の 3 項目（https://docs.dify.ai/en/api-reference/guides/errors）。

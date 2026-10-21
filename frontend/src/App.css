@@ -213,6 +213,35 @@
 .badge-RETURNED { background: var(--badge-returned-bg); color: var(--badge-returned-fg); }
 .badge-REJECTED { background: var(--badge-rejected-bg); color: var(--badge-rejected-fg); }
 
+/* Dify の確認ポイント（Figma 2:2 の「AI 確認」の追加分） */
+.btn-ai {
+  border: 1px solid var(--header-bg);
+  background: var(--surface);
+  color: var(--header-bg);
+}
+.ai-check {
+  padding: 10px 16px 12px 106px;
+  border-bottom: 1px solid var(--border);
+  background: var(--row-head-bg);
+  font-size: 13px;
+  color: var(--text-body);
+}
+.ai-check p {
+  margin: 4px 0 0;
+}
+.ai-check-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+.ai-check-text {
+  /* WHY: Dify は箇条書きを改行で返す。改行をそのまま出す。 */
+  white-space: pre-wrap;
+}
+.ai-check-error {
+  color: var(--error);
+}
+
 .message {
   margin: 0;
   font-size: 12px;

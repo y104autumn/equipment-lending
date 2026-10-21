@@ -19,8 +19,24 @@ class RequestController {
 
     private final LendingService service;
 
-    RequestController(LendingService service) {
+    private final DifyClient dify;
+
+    RequestController(LendingService service, DifyClient dify) {
         this.service = service;
+        this.dify = dify;
+    }
+
+    /**
+     * 承認前の確認ポイントを Dify に出させる（D-14）。押された時だけ呼ぶ。
+     * WHY: Dify が失敗しても 200 で available=false を返す＝画面は業務を止めずに文言だけ出す（Dify連携.md §3）。
+     *      申請番号が無い時だけは 404（Dify ではなくこのアプリの入力の誤り）。
+     */
+    @PostMapping("/requests/{id}/ai-check")
+    AiCheckView aiCheck(@PathVariable Long id) {
+        AiCheckInput in = service.aiCheckInput(id);
+        return dify.checkPoints(in.requestId(), in.equipmentName(), in.startDate(), in.dueDate(), in.reason())
+                .map(text -> new AiCheckView(id, true, text, null))
+                .orElseGet(() -> new AiCheckView(id, false, null, "AI の確認を取得できませんでした"));
     }
 
     /** 画面の備品の選択肢。WHY: 選択肢を画面に直書きすると DB の備品と食い違うため、DB から返す。 */

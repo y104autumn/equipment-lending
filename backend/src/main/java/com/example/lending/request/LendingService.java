@@ -42,6 +42,13 @@ public class LendingService {
         return RequestView.of(saved);
     }
 
+    @Transactional(readOnly = true)
+    public AiCheckInput aiCheckInput(Long id) {
+        LendingRequest r = requestRepository.findById(id).orElseThrow(() -> new RequestNotFoundException(id));
+        return new AiCheckInput(r.getId(), r.getEquipment().getName(), r.getStartDate(), r.getDueDate(),
+                r.getReason());
+    }
+
     /** 状態を進め、同じトランザクションで履歴を残す（テーブル定義書の更新責務）。 */
     @Transactional
     public RequestView transition(Long id, Action action) {
