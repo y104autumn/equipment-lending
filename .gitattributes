@@ -11,10 +11,13 @@
 # core.autocrlf はローカル設定でリポジトリに付いて回らない (git の既定は false)。
 # そのため clone 先のマシン設定に依存せず CRLF を保証する目的でここに明示する。
 # 根本の必要条件は「BOM 欠落」なので BOM 付与が第一防衛線。本設定は第二防衛線 (多層防御)。
-*.ps1 text eol=crlf
+# WHY（順序）: git は同じ属性に複数の行が当たると後の行を採る。`* text=auto eol=lf` より前に置くと
+# `.ps1` も LF に上書きされる（実測: `git ls-files --eol` が i/lf だった）。だから全体の既定を先に、例外を後に書く。
 
-# それ以外のテキストは LF に正規化する（Windows と WSL・CI の差分を消す）
+# テキストは LF に正規化する（Windows と WSL・CI の差分を消す）
 * text=auto eol=lf
+
+*.ps1 text eol=crlf
 
 # バイナリは改行変換しない（記入ガイド: 追跡する種類だけ残す）
 *.png binary
