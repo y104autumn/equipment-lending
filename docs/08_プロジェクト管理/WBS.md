@@ -14,7 +14,7 @@
 | 5 | 入口 | `CLAUDE.md`・`README.md` | 3 | 両方がリポ直下にあり、`CLAUDE.md` に禁止事項がある | ✅ |
 | 6 | 最初のコミット | 雛形の取り込み確認→コミット | 3,4,5 | `git ls-files` に `.template` で終わるものが 0 件・`git status --porcelain` が 0 行 | ✅ |
 | 7 | GitHub のリポジトリ | `gh repo create` で作成し push | 6 | `git log @{u}..HEAD` が 0 件 | ✅ |
-| 7a | 公開 | 内部メモを除いて public にする（D-12） | 7 | `gh repo view --json visibility` が `PUBLIC`・履歴が 1 コミット | ⬜ |
+| 7a | 公開 | 内部メモを除いて public にする（D-12） | 7 | `gh repo view --json visibility` が `PUBLIC`・履歴が 1 コミット | ✅ |
 | 8 | 画面設計 | Figma に MCP で 1 画面を作る（**大前提・D-11**） | 7・Figma 認証 | Figma のファイル URL と画面のキャプチャを `docs/05_振る舞い/画面設計書.md` に載せる | ⏸ Figma 認証待ち |
 | 8a | テーブル設計 | 専用 DB のテーブルを設計する（D-10） | 1 | `docs/04_契約/テーブル定義書.md` がある | ✅ |
 | 8b | 専用 DB | PostgreSQL に `equipment_lending` を新しく作る | 8a・作り方の決定 | `psql` の識別クエリで DB 名・ポート・版を値で確かめる | ⏸ 決定待ち |
