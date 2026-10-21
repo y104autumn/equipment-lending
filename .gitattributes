@@ -1,0 +1,23 @@
+# .gitattributes — equipment-lending
+#
+# 追加する行にも WHY を書く。
+
+# WHY: PowerShell 5.1 は BOM 無し UTF-8 の .ps1 を既定コードページ (日本語 Windows = cp932)
+# で誤デコードする。日本語コメント末尾の句点「。」(UTF-8 = E3 80 82) の 2 バイト目 0x82 が cp932 の
+# DBCS 先行バイトとして直後の LF (0x0A) を食い潰し、コメントが次の実行行まで伸びてその行を無言で飲み込む。
+# parse error にならないため目視でも PSParser でも気づけない (実測: parseErrors=0 のまま消える)。
+# CRLF なら 0x82 は CR (0x0D) を食うだけで LF が残り行が終わるため発火しない。
+#
+# core.autocrlf はローカル設定でリポジトリに付いて回らない (git の既定は false)。
+# そのため clone 先のマシン設定に依存せず CRLF を保証する目的でここに明示する。
+# 根本の必要条件は「BOM 欠落」なので BOM 付与が第一防衛線。本設定は第二防衛線 (多層防御)。
+*.ps1 text eol=crlf
+
+# それ以外のテキストは LF に正規化する（Windows と WSL・CI の差分を消す）
+* text=auto eol=lf
+
+# バイナリは改行変換しない（記入ガイド: 追跡する種類だけ残す）
+*.png binary
+*.jpg binary
+*.pdf binary
+*.xlsx binary

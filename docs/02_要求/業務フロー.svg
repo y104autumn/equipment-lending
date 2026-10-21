@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 360" width="900" height="360" font-family="Yu Gothic UI, Meiryo, sans-serif" font-size="13">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#333"/></marker>
+  </defs>
+  <!-- レーン -->
+  <rect x="0" y="0" width="900" height="150" fill="#eef5fc" stroke="#0b5cad"/>
+  <rect x="0" y="150" width="900" height="210" fill="#fbf7ee" stroke="#0b5cad"/>
+  <rect x="0" y="0" width="70" height="150" fill="#0b5cad"/>
+  <rect x="0" y="150" width="70" height="210" fill="#0b5cad"/>
+  <text x="35" y="80" fill="#fff" text-anchor="middle" font-weight="bold">申請者</text>
+  <text x="35" y="250" fill="#fff" text-anchor="middle" font-weight="bold">総務</text>
+
+  <!-- 申請者 -->
+  <circle cx="110" cy="75" r="14" fill="#fff" stroke="#333"/>
+  <text x="110" y="105" text-anchor="middle" font-size="11">開始</text>
+  <rect x="150" y="50" width="120" height="50" rx="8" fill="#fff" stroke="#333"/>
+  <text x="210" y="72" text-anchor="middle">申請を入力</text>
+  <text x="210" y="90" text-anchor="middle" font-size="11">状態: 申請中</text>
+  <rect x="560" y="50" width="120" height="50" rx="8" fill="#fff" stroke="#333"/>
+  <text x="620" y="72" text-anchor="middle">備品を受け取り</text>
+  <text x="620" y="90" text-anchor="middle">使う</text>
+  <rect x="720" y="50" width="120" height="50" rx="8" fill="#fff" stroke="#333"/>
+  <text x="745" y="80" text-anchor="start">返却する</text>
+  <rect x="380" y="50" width="120" height="50" rx="8" fill="#fff" stroke="#999" stroke-dasharray="4 3"/>
+  <text x="440" y="72" text-anchor="middle">却下を確認</text>
+  <text x="440" y="90" text-anchor="middle" font-size="11">状態: 却下（終了）</text>
+
+  <!-- 総務 -->
+  <rect x="150" y="215" width="120" height="50" rx="8" fill="#fff" stroke="#333"/>
+  <text x="210" y="245" text-anchor="middle">申請を確認</text>
+  <polygon points="330,240 375,210 420,240 375,270" fill="#fff" stroke="#333"/>
+  <text x="375" y="244" text-anchor="middle">承認？</text>
+  <rect x="460" y="215" width="120" height="50" rx="8" fill="#fff" stroke="#333"/>
+  <text x="520" y="237" text-anchor="middle">貸し出す</text>
+  <text x="520" y="255" text-anchor="middle" font-size="11">承認済 → 貸出中</text>
+  <rect x="720" y="215" width="120" height="50" rx="8" fill="#fff" stroke="#333"/>
+  <text x="780" y="237" text-anchor="middle">返却を記録</text>
+  <text x="780" y="255" text-anchor="middle" font-size="11">状態: 返却済</text>
+  <circle cx="780" cy="320" r="14" fill="#fff" stroke="#333" stroke-width="3"/>
+  <text x="810" y="324" font-size="11">終了</text>
+
+  <!-- 矢印 -->
+  <g stroke="#333" fill="none" marker-end="url(#a)">
+    <line x1="124" y1="75" x2="148" y2="75"/>
+    <line x1="210" y1="100" x2="210" y2="213"/>
+    <line x1="270" y1="240" x2="328" y2="240"/>
+    <line x1="420" y1="240" x2="458" y2="240"/>
+    <line x1="375" y1="210" x2="420" y2="102"/>
+    <line x1="560" y1="215" x2="600" y2="102"/>
+    <line x1="680" y1="75" x2="718" y2="75"/>
+    <line x1="780" y1="100" x2="780" y2="213"/>
+    <line x1="780" y1="265" x2="780" y2="304"/>
+  </g>
+  <text x="425" y="232" font-size="11">はい</text>
+  <text x="402" y="160" font-size="11">いいえ</text>
+  <text x="590" y="160" font-size="11">連絡</text>
+</svg>
