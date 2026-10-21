@@ -16,7 +16,7 @@
 | 6 | 最初のコミット | 雛形の取り込み確認→コミット | 3,4,5 | `git ls-files` に `.template` で終わるものが 0 件・`git status --porcelain` が 0 行 | ✅ |
 | 7 | GitHub のリポジトリ | `gh repo create` で作成し push | 6 | `git log @{u}..HEAD` が 0 件 | ✅ |
 | 7a | 公開 | 内部メモを除いて public にする（D-12） | 7 | `gh repo view --json visibility` が `PUBLIC`・履歴が 1 コミット | ✅ |
-| 8 | 画面設計 | Figma に MCP で 1 画面を作る（**大前提・D-11**） | 7・Figma 認証 | Figma のファイル URL と画面のキャプチャを `docs/05_振る舞い/画面設計書.md` に載せる | ⏸ Figma 認証待ち |
+| 8 | 画面設計 | Figma に MCP で 1 画面を作る（**大前提・D-11**） | 7・Figma 認証 | Figma のファイル URL と画面のキャプチャを `docs/05_振る舞い/画面設計書.md` に載せる | ✅ |
 | 8a | テーブル設計 | 専用 DB のテーブルを設計する（D-10） | 1 | `docs/04_契約/テーブル定義書.md` がある | ✅ |
 | 8b | 専用 DB | PostgreSQL 17 に `equipment_lending` を新しく作る（D-13）。AI がスクリプトを書き、オーナーが 1 回実行する | 8a | `psql` の識別クエリで DB 名・ポート（5433）・版（17）を値で確かめる | ⏸ オーナーの実行待ち |
 | 8c | Dify | 申請理由の確認（承認の判断補助）を Dify のワークフローに任せる（**大前提・D-11**・D-14） | 8b・Dify の API キー | Dify のアプリ画面と、アプリから呼んだ結果を記録に残す | ⬜ |
