@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.everyItem;
 import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -103,14 +104,15 @@ class RequestApiTest {
     @Test
     void 状態で絞り込める() throws Exception {
         long a = create(VALID);
-        create(VALID);
+        long b = create(VALID);
         act(a, "approve", 200);
         mvc.perform(get("/api/requests").param("status", "APPROVED"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].requestId", is((int) a)));
+        // WHY: 全件数で比べると、巻き戻さない他のテストの行が残った時に落ちる。作った 2 件が含まれるかで見る。
         mvc.perform(get("/api/requests"))
-                .andExpect(jsonPath("$", hasSize(2)));
+                .andExpect(jsonPath("$[*].requestId", hasItems((int) a, (int) b)));
     }
 
     @Test
@@ -219,7 +221,9 @@ class RequestApiTest {
         for (String a : new String[] {"approve", "reject", "lend", "return"}) {
             act(id, a, 409);
         }
+        // WHY: everyItem は空でも通るので、作った申請が含まれることも見る。
         mvc.perform(get("/api/requests").param("status", "REJECTED"))
+                .andExpect(jsonPath("$[*].requestId", hasItem((int) id)))
                 .andExpect(jsonPath("$[*].status", everyItem(is("REJECTED"))));
     }
 }

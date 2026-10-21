@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-/** 応答の決まり（要件定義書 §7）: 400＝入力／404＝申請番号が無い／409＝状態の表に無い操作。 */
+/** 応答の決まり（要件定義書 §7）: 400＝入力／404＝申請番号が無い／409＝状態の表に無い操作、または同じ申請を同時に操作した時の後の方。 */
 @RestControllerAdvice
 class ApiExceptionHandler {
 
