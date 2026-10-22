@@ -1,0 +1,214 @@
+app:
+  description: 備品貸出申請の内容から、総務が承認前に確かめる点を返す（承認するかは総務が決める）
+  icon: 🤖
+  icon_background: '#FFEAD5'
+  icon_type: emoji
+  mode: workflow
+  name: 備品貸出 申請理由の確認
+  use_icon_as_answer_icon: false
+dependencies:
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: langgenius/openai:1.0.7@f36c3761167b3af0bfb4975b728fe3cd126342d076e1ec5359e6d4f92557d3d4
+    version: null
+kind: app
+version: 0.7.0
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      allowed_file_extensions:
+      - .JPG
+      - .JPEG
+      - .PNG
+      - .GIF
+      - .WEBP
+      - .SVG
+      allowed_file_types:
+      - image
+      allowed_file_upload_methods:
+      - local_file
+      - remote_url
+      enabled: false
+      fileUploadConfig:
+        attachment_image_file_size_limit: 2
+        audio_file_size_limit: 50
+        batch_count_limit: 5
+        file_size_limit: 15
+        file_upload_limit: 50
+        image_file_batch_limit: 10
+        image_file_size_limit: 10
+        knowledge_file_size_limit: 15
+        single_chunk_attachment_limit: 10
+        skill_file_size_limit: 50
+        video_file_size_limit: 100
+        workflow_file_upload_limit: 10
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+        - local_file
+        - remote_url
+      number_limits: 3
+    opening_statement: ''
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: start
+        targetType: llm
+      id: 1792560604502-source-1792560640790-target
+      source: '1792560604502'
+      sourceHandle: source
+      target: '1792560640790'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: end
+      id: 1792560640790--1792560743200-target
+      source: '1792560640790'
+      sourceHandle: ''
+      target: '1792560743200'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+    - data:
+        selected: false
+        title: ユーザー入力
+        type: start
+        variables:
+        - default: ''
+          hint: ''
+          label: equipment_name備品
+          options: []
+          placeholder: ''
+          required: true
+          type: text-input
+          variable: equipment_name
+        - default: ''
+          hint: ''
+          label: start_date開始日
+          options: []
+          placeholder: ''
+          required: true
+          type: text-input
+          variable: start_date
+        - default: ''
+          hint: ''
+          label: due_date返却予定日
+          options: []
+          placeholder: ''
+          required: true
+          type: text-input
+          variable: due_date
+        - default: ''
+          hint: ''
+          label: reason理由
+          max_length: 200
+          options: []
+          placeholder: ''
+          required: false
+          type: text-input
+          variable: reason
+      height: 187
+      id: '1792560604502'
+      position:
+        x: 80
+        y: 282
+      positionAbsolute:
+        x: 80
+        y: 282
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: gpt-4.1-mini-2025-04-14
+          provider: langgenius/openai/openai
+        prompt_template:
+        - id: 71b2e734-d631-485f-9831-a3b514272e82
+          role: system
+          text: 'あなたは社内の備品貸出を担当する総務の補助です。次の貸出申請について、総務が承認する前に確かめるべき点を、日本語の箇条書きで 3
+            つまで挙げてください。承認するか却下するかの判断は書かないでください（決めるのは総務です）。理由が空のときは、申請者に理由を確かめる点を必ず含めてください。
+
+
+            備品: {{#1792560604502.equipment_name#}}
+
+            期間: {{#1792560604502.start_date#}} 〜 {{#1792560604502.due_date#}}
+
+            理由: {{#1792560604502.reason#}}'
+        selected: false
+        title: LLM
+        type: llm
+        vision:
+          enabled: false
+      height: 88
+      id: '1792560640790'
+      position:
+        x: 382
+        y: 282
+      positionAbsolute:
+        x: 382
+        y: 282
+      selected: true
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        outputs:
+        - value_selector:
+          - '1792560640790'
+          - text
+          value_type: string
+          variable: check_points
+        selected: true
+        title: 出力
+        type: end
+      height: 88
+      id: '1792560743200'
+      position:
+        x: 684
+        y: 282
+      positionAbsolute:
+        x: 684
+        y: 282
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    viewport:
+      x: 470.452160493827
+      y: 117.05015432098753
+      zoom: 0.9645061728395065
+  rag_pipeline_variables: []
