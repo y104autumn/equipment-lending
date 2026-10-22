@@ -65,4 +65,7 @@ WHY: Dify は承認の補助であって業務の必須経路ではない。Dify
 ## 4. 設定と秘密情報
 
 - API キーは `backend/.env` に `dify.api-key=...` として置く（git 管理外）。キーはオーナーが Dify の画面で発行する。
+  - 発行する場所: Dify でアプリを開く → 左メニュー「アクセスポイント」 → 「API キー」 → 「新しいシークレットキーを作成」（`app-` で始まる。全文が見えるのは作成した時だけ）。
+  - 置く場所は `backend/.env`。リポジトリ直下の `.env` は読まれない（`application.properties` の `spring.config.import=optional:file:.env[.properties]` は backend の作業ディレクトリから見る）。
+  - 読まれたかの確かめ方: backend を起動し直して AI 確認を 1 回押す。ログに `dify.api-key が未設定のため Dify を呼ばない` が出なければ読まれている。
 - 無料プラン（Sandbox）の AI クレジットは 200 で補充されない（https://docs.dify.ai/en/use-dify/getting-started/quick-start）。動作確認の呼び出し回数を絞る。
