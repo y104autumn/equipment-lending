@@ -69,3 +69,47 @@ WHY: Dify は承認の補助であって業務の必須経路ではない。Dify
   - 置く場所は `backend/.env`。リポジトリ直下の `.env` は読まれない（`application.properties` の `spring.config.import=optional:file:.env[.properties]` は backend の作業ディレクトリから見る）。
   - 読まれたかの確かめ方: backend を起動し直して AI 確認を 1 回押す。ログに `dify.api-key が未設定のため Dify を呼ばない` が出なければ読まれている。
 - 無料プラン（Sandbox）の AI クレジットは 200 で補充されない（https://docs.dify.ai/en/use-dify/getting-started/quick-start）。動作確認の呼び出し回数を絞る。
+
+## 5. 手元の Dify（セルフホスト版・D-19・WBS 8d）
+
+Dify Cloud のキーは外部サービスの本番の認証情報で AI が扱えないため、手元の PC に Dify を立てて LLM を Ollama にする（D-19）。
+
+### 5.1 公式の要件（https://docs.dify.ai/en/self-host/quick-start/docker-compose・2026-10-22 に参照）
+
+| 項目 | 公式の記載 |
+|---|---|
+| CPU / メモリ | 2 コア以上 / 4 GiB 以上 |
+| Windows | Docker Desktop（WSL 2）・Docker Compose 2.24.0 以上 |
+| 置き場所 | ソースとデータは Windows 側ではなく Linux（WSL）のファイルシステムに置く |
+| 起動 | `docker compose up -d` → `http://localhost/install` で管理者を作る |
+
+### 5.2 実施した手順（2026-10-22）
+
+1. Docker Desktop を起動し、`docker info` が `29.4.0 / Docker Desktop` を返すまで待つ（約 4 秒）。
+2. WSL Ubuntu の中で `docker` が使えることを確かめる（サーバー 29.4.0）。
+3. 最新版を確かめる: GitHub API の `releases/latest` が `1.17.1`（2026-09-10 公開・prerelease でない）。
+4. `git clone --depth 1 --branch 1.17.1 https://github.com/langgenius/dify.git`（WSL のホーム直下 `~/dify`）。
+5. `cd ~/dify/docker && cp .env.example .env`（既定のまま。ポート 80／443 は空いていた）。
+6. `docker compose up -d` → 終了コード 0。サービスは 15 個（api・worker・web・nginx・db_postgres・redis・weaviate・sandbox・plugin_daemon ほか）。
+
+### 5.3 測った値
+
+| 項目 | 値 | 測り方 |
+|---|---|---|
+| コンテナの合計メモリ | 約 1.95 GiB（api・api_websocket・worker が各 約 0.44 GiB） | `docker stats --no-stream` |
+| WSL の VM | used 2.69 GB・buff/cache 4.90 GB（イメージ取得の名残）→ `drop_caches` 後 buff/cache 1.32 GB | `free -m` |
+| Windows のコミット | Dify 起動前 40.67 / 50.85 GiB → 起動後 48.31 / 51.86 GiB | `Get-Counter '\Memory\Committed Bytes','\Memory\Commit Limit'` |
+| Ollama のモデル（suzume-llama3・GPU に全部載る 5.28 GB） | 読み込み前 48.35 / 51.86 GiB → 読み込み後 **54.25 / 54.89 GiB**（余地 0.64 GiB）。応答まで 27.0 秒 | 同上・`/api/ps` |
+| コンテナから Ollama | `http://host.docker.internal:11434/api/version` が `{"version":"0.40.6"}` を返す（Ollama が 127.0.0.1 待ち受けでも届く） | api コンテナ内の Python |
+
+### 5.4 つまずいた点
+
+- **メモリが足りない。** Dify とモデルを両方載せると、この PC ではコミットの余地が 1 GiB を切った（コミットの上限超えは PC ごと落ちる原因になる）。モデルを外すと 45.45 / 54.89 GiB に戻った。続けるには、他の常駐を減らすか、より小さいモデル（`llama3.2:3b`）にするかを決める必要がある。
+- `drop_caches` は WSL の中の空きを増やすが、Windows 側のコミットはすぐには減らない。
+- 起動直後の `api` は `unhealthy` で `/install` が 404 を返す（起動中）。管理者の作成はまだしていない。
+
+### 5.5 未了（WBS 8d の残り）
+
+管理者の作成 → Ollama プラグインの導入とモデル登録 → DSL の取り込みと LLM ノードの差し替え → 公開 → キー発行 → `curl` で `http://localhost/v1/workflows/run`。
+
+止め方: `cd ~/dify/docker && docker compose down`（⛔ `-v` を付けない。データは `~/dify/docker/volumes/` に残る）→ Docker Desktop を終了 → `wsl --shutdown`。
